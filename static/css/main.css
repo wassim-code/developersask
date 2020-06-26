@@ -1,0 +1,29 @@
+body {
+	background-color: #f0f0f0;
+}
+
+.navbar-brand {
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+.asteriskField {
+    display: none;
+}
+
+.content-section {
+	padding: 20px;
+	border: 2px solid #dddddd;
+	border-radius: 10px;
+	background-color: #FFFFFF;
+}
+
+.txt {
+	white-space: break-spaces;
+}
+
+.re {
+	width: 120px;
+	border-radius: 30px;
+	border-width: 2px;
+	font-weight: 600;
+}
