@@ -33,3 +33,9 @@ def question_detail(request, q_id):
             )
         messages.success(request, 'Your answer has been added successfully!')
     return render(request, 'core/question_detail.html', {'question': question})
+
+def handler404(request, *args, **kwargs):
+    return render(request, '404.html', status=404)
+
+def handler500(request, *args, **kwargs):
+    return render(request, '500.html', status=500)
