@@ -18,7 +18,7 @@
             <hr>
         {% endfor %}
         {% if user.is_authenticated %}
-            <form method="POST" id="answer-form">
+            <form method="POST">
                 {% csrf_token %}
                 <textarea class="form-control" placeholder="Type your answer here." name="answer_body" cols="30" rows="10" required></textarea>
                 <button class="btn btn-primary mt-2" type="submit">Submit</button>
@@ -27,4 +27,55 @@
             <a href="{% url 'accounts:login' %}?next={{ request.path }}">Log in To Answer This Question</a>
         {% endif %}
     </div>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        $("form").submit(e => {
+            e.preventDefault();
+            $.ajaxSetup({ 
+				beforeSend: function(xhr, settings) {
+					function getCookie(name) {
+						var cookieValue = null;
+						if (document.cookie && document.cookie != '') {
+							var cookies = document.cookie.split(';');
+							for (var i = 0; i < cookies.length; i++) {
+								var cookie = jQuery.trim(cookies[i]);
+								// Does this cookie string begin with the name we want?
+								if (cookie.substring(0, name.length + 1) == (name + '=')) {
+									cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+									break;
+								}
+							}
+						}
+						return cookieValue;
+					}
+					if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+						// Only send the token to relative URLs i.e. locally.
+						xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+					}
+				} 
+			});
+            $.post(current_url, $("form").serialize(), response => {
+                const answer = response.answer;
+                $("#alerts").html(`
+                    <div class="alert alert-success mb-3">
+                        ${response['alert_msg']}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                `);
+                $("hr").last().after(`
+                    <p class="txt">${ answer.body }</p>
+                    <div class="text-secondary">
+                        By ${ answer.author } <span class="separator">|</span> ${ answer.pub_date }
+                    </div>
+                    <hr>
+                `)
+                $("form textarea").val("");
+                window.scrollTo(0, 0);
+            })
+        })
+    </script>
 {% endblock %}

@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import FormView
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.views import PasswordChangeView as BasePasswordChangeView
+from django.http import JsonResponse
 from django.contrib import messages
 
 from .forms import SignUpForm, LoginForm
@@ -20,9 +21,9 @@ class SignUpView(FormView):
         return url
 
     def form_valid(self, form):
-        user = form.save()
+        form.save()
         messages.success(self.request,
-        f'Hey {user.username}, Your account has been created successfully! You are now able to log in with your new account.')
+        f'Your account has been created successfully! You are now able to log in with your new account.')
         return super().form_valid(form)
 
 class PasswordChangeView(BasePasswordChangeView):
@@ -36,6 +37,7 @@ class PasswordChangeView(BasePasswordChangeView):
 def login(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
+        context = {}
         if form.is_valid():
             try:
                 email = User.objects.get(username=form.cleaned_data['cred1']).email
@@ -48,12 +50,12 @@ def login(request):
                                     password=form.cleaned_data['password'])
             if user is not None:
                 auth_login(request, user)
-                try:
-                    return redirect(request.GET['next'])
-                except:
-                    return redirect('core:home')
+                redirect_url = request.GET.get('next') if request.GET.get('next') else '/'
+                context['next'] = redirect_url
             else:
-                messages.error(request, 'Username or Password is Incorrect.')
+                context['alert_type'] = 'danger'
+                context['alert_msg'] = 'Username or Password is Incorrect.'
+        return JsonResponse(context, safe=False)
     else:
         form = LoginForm()
     return render(request, 'registration/login.html', {'form': form})

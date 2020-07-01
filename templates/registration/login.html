@@ -10,16 +10,18 @@
 			<div class="card">
 				<div class="card-body">
 					<h2>Log in</h2>
-					{% if messages %}
-						{% for message in messages %}
-							<div class="alert alert-{{ message.tags }} my-2">
-								<strong>{% if message.tags != 'danger' %}{{ message.tags|capfirst  }}:{% endif %}</strong> {{ message }}
-								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-								</button>
-							</div>
-						{% endfor %}
-					{% endif %}
+					<div id="login-alerts">
+						{% if messages %}
+							{% for message in messages %}
+								<div class="alert alert-{{ message.tags }} my-2">
+									{{ message }}
+									<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+							{% endfor %}
+						{% endif %}
+					</div>
 					{% if not messages %}
 						<p>If you are new to DevelopersAsk, Please <a href="{% url 'accounts:signup' %}?next={{ request.GET.next }}">Sign Up</a> First.</p>
 					{% endif %}
@@ -32,4 +34,51 @@
 			</div>
 		</div>
 	</div>
+{% endblock %}
+
+{% block javascript %}
+	<script>
+		$("form").submit(e => {
+			e.preventDefault();
+			$.ajaxSetup({ 
+				beforeSend: function(xhr, settings) {
+					function getCookie(name) {
+						var cookieValue = null;
+						if (document.cookie && document.cookie != '') {
+							var cookies = document.cookie.split(';');
+							for (var i = 0; i < cookies.length; i++) {
+								var cookie = jQuery.trim(cookies[i]);
+								// Does this cookie string begin with the name we want?
+								if (cookie.substring(0, name.length + 1) == (name + '=')) {
+									cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+									break;
+								}
+							}
+						}
+						return cookieValue;
+					}
+					if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+						// Only send the token to relative URLs i.e. locally.
+						xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+					}
+				} 
+			});
+			$.post(current_url, $("form").serialize(), response => {
+				if (response['next'] != undefined) {
+					window.location.href = response['next']
+				} else {
+					$("#login-alerts").html(`
+						<div class="alert alert-${response['alert_type']} my-3">
+							${response['alert_msg']}
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+					`);
+					$('form input[type="password"]').val("");
+					$("p").remove();
+				}
+			})
+		})
+	</script>
 {% endblock %}

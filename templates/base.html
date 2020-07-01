@@ -55,7 +55,7 @@
 					{% else %}
 						<ul class="navbar-nav">
 							<li class="nav-item">
-								<a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-outline-primary re mx-3">Log in</a>
+								<a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-outline-primary re mx-0 mx-md-3 my-2 my-md-0">Log in</a>
 							</li>
 							<li class="nav-item">
 								<a href="{% url 'accounts:signup' %}" class="btn btn-primary re">Sign Up</a>
@@ -70,16 +70,18 @@
 			<br>
 			<div class="row">
 				<div class="col-lg-7">
-					{% if messages %}
-						{% for message in messages %}
-							<div class="alert alert-{{ message.tags }} mb-3" role="alert">
-								<strong>{{ message.tags|capfirst  }}:</strong> {{ message }}
-								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-								</button>
-							</div>
-						{% endfor %}
-					{% endif %}
+					<div id="alerts">
+						{% if messages %}
+							{% for message in messages %}
+								<div class="alert alert-{{ message.tags }} mb-3" role="alert">
+									{{ message }}
+									<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+							{% endfor %}
+						{% endif %}
+					</div>
 
 					{% block content %}{% endblock %}
 				</div>
