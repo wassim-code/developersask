@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
 from django.contrib import messages
 
 from .models import Question, Answer
@@ -27,14 +26,12 @@ class QuestionCreateView(LoginRequiredMixin, CreateView):
 def question_detail(request, q_id):
     question = get_object_or_404(Question, id=q_id)
     if request.method == "POST" and request.user.is_authenticated:
-        answer = Answer.objects.create(
+        Answer.objects.create(
             question=question,
             author=request.user,
             body=request.POST['answer_body'],
             )
-        answer_dict = {'author': answer.author.username, 'pub_date': answer.pub_date, 'body': answer.body}
-        context = {'alert_msg': 'Your answer has been added successfully!', 'answer': answer_dict}
-        return JsonResponse(context, safe=False)
+        messages.success(request, 'You answer has been added successfully!')
     return render(request, 'core/question_detail.html', {'question': question})
 
 def handler404(request, *args, **kwargs):

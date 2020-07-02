@@ -34,6 +34,7 @@ class LoginForm(forms.Form):
         for field_name, field in self.fields.items():
             self.helper.layout.append(Field(field_name, placeholder=field.label))
         self.helper.layout.append(Submit('submit', 'Log in', css_class='btn-block'))
+        self.helper.form_tag = False
         self.helper.form_show_labels = False
 
 class PasswordResetForm(BasePasswordResetForm):

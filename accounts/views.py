@@ -50,8 +50,7 @@ def login(request):
                                     password=form.cleaned_data['password'])
             if user is not None:
                 auth_login(request, user)
-                redirect_url = request.GET.get('next') if request.GET.get('next') else '/'
-                context['next'] = redirect_url
+                context['redirect_user'] = 'true'
             else:
                 context['alert_type'] = 'danger'
                 context['alert_msg'] = 'Username or Password is Incorrect.'

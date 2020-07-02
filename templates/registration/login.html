@@ -26,7 +26,9 @@
 						<p>If you are new to DevelopersAsk, Please <a href="{% url 'accounts:signup' %}?next={{ request.GET.next }}">Sign Up</a> First.</p>
 					{% endif %}
 					<hr>
-					{% crispy form %}
+					<form method="POST" data-next="{{ request.GET.next }}">
+						{% crispy form %}
+					</form>
 				</div>
 				<div class="card-footer text-center">
 					<a href="{% url 'password_reset' %}" class="text-muted">Forgot Your Password?</a>
@@ -64,8 +66,8 @@
 				} 
 			});
 			$.post(current_url, $("form").serialize(), response => {
-				if (response['next'] != undefined) {
-					window.location.href = response['next']
+				if (response['redirect_user'] == 'true') {
+					window.location.href = $("form").data('next') ? $("form").data('next') : '/'
 				} else {
 					$("#login-alerts").html(`
 						<div class="alert alert-${response['alert_type']} my-3">
