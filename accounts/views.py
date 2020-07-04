@@ -6,7 +6,7 @@ from django.contrib.auth.views import PasswordChangeView as BasePasswordChangeVi
 from django.http import JsonResponse
 from django.contrib import messages
 
-from .forms import SignUpForm, LoginForm
+from .forms import *
 from .models import User
 
 class SignUpView(FormView):

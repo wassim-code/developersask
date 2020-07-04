@@ -1,9 +1,15 @@
 body {
-	background-color: #f0f0f0;
+	background-color: #f7f7f7;
+}
+
+.bg-light {
+	background-color: white !important;
+	border-bottom: 3px solid #eeeeee;
 }
 
 .navbar-brand {
-    font-family: 'Noto Sans KR', sans-serif;
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 25px;
 }
 
 .asteriskField {
@@ -23,7 +29,7 @@ body {
 
 .re {
 	width: 120px;
-	border-radius: 30px;
+	border-radius: 35px;
 	border-width: 2px;
 	font-weight: 600;
 }
