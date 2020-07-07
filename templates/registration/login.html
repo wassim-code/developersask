@@ -42,6 +42,7 @@
 	<script>
 		$("form").submit(e => {
 			e.preventDefault();
+			$('form input[type="submit"]').attr('disabled', true)
 			$.ajaxSetup({ 
 				beforeSend: function(xhr, settings) {
 					function getCookie(name) {
@@ -60,25 +61,41 @@
 						return cookieValue;
 					}
 					if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
-						// Only send the token to relative URLs i.e. locally.
 						xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
 					}
 				} 
 			});
-			$.post(current_url, $("form").serialize(), response => {
-				if (response['redirect_user'] == 'true') {
-					window.location.href = $("form").data('next') ? $("form").data('next') : '/'
-				} else {
+			$.ajax({
+				url: current_url,
+				type: "POST",
+				data: $("form").serialize(),
+				success: response => {
+					if (response['redirect_user'] == 'true') {
+						window.location.href = $("form").data('next') ? $("form").data('next') : '/'
+					} else {
+						$("#login-alerts").html(`
+							<div class="alert alert-${response['alert_type']} my-3">
+								${response['alert_msg']}
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+						`);
+						$('form input[type="submit"]').removeAttr('disabled');
+						$('form input[type="password"]').val("");
+						$("p").remove();
+					}
+				},
+				error: (ar1, arg2, arg3) => {
 					$("#login-alerts").html(`
-						<div class="alert alert-${response['alert_type']} my-3">
-							${response['alert_msg']}
+						<div class="alert alert-danger my-3">
+							Sorry, Something went wrong. Please Try Again Later or Clear The Cookies.
 							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 								<span aria-hidden="true">&times;</span>
 							</button>
 						</div>
 					`);
-					$('form input[type="password"]').val("");
-					$("p").remove();
+					$('form input[type="submit"]').removeAttr('disabled');
 				}
 			})
 		})

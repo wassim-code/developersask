@@ -53,7 +53,7 @@ def login(request):
                 context['redirect_user'] = 'true'
             else:
                 context['alert_type'] = 'danger'
-                context['alert_msg'] = 'Username or Password is Incorrect.'
+                context['alert_msg'] = 'Sorry, Your Username or Password is Incorrect.'
         return JsonResponse(context, safe=False)
     else:
         form = LoginForm()
