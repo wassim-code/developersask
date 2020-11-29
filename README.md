@@ -1,2 +1,2 @@
-# GryShop
-It's an ecommerce website.
+# DevelopersAsk
+I wanted to clone StackOverflow.
